@@ -18,6 +18,11 @@ dependencies:
   highlight_text: ^1.6.0
   grouped_list: ^5.1.2
   http: ^0.13.5
+  flutter_tts: ^3.6.3 # 내장 TTS
+  google_fonts: ^4.0.3 # 글꼴
+  flutter_svg: ^2.0.3 # svg 이미지
+  flutter_secure_storage: ^8.0.0 # 로그인 정보 저장
+  kakao_flutter_sdk: ^1.4.2 # 카카오 SDK
 
 dev_dependencies:
   flutter_test:
@@ -28,3 +33,5 @@ dev_dependencies:
 flutter:
 
   uses-material-design: true
+  assets:
+    - assets/images/

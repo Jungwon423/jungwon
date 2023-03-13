@@ -2,21 +2,22 @@ import 'dart:convert';
 
 import 'package:avatar_glow/avatar_glow.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 import 'package:highlight_text/highlight_text.dart';
-import 'package:jungwon/ChatPage/widgets/messages.dart';
+import 'package:jungwon/ChatScreen/widgets/messages.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'package:http/http.dart' as http;
 
 import '../models/chat.dart';
 
-class ChatPage extends StatefulWidget {
-  const ChatPage({super.key});
+class ChatScreen extends StatefulWidget {
+  const ChatScreen({super.key});
 
   @override
-  State<ChatPage> createState() => _ChatPageState();
+  State<ChatScreen> createState() => _ChatScreenState();
 }
 
-class _ChatPageState extends State<ChatPage> {
+class _ChatScreenState extends State<ChatScreen> {
   late stt.SpeechToText _speech;
   bool _isListening = false;
   String _text = 'Press the button and start speaking';
@@ -24,11 +25,22 @@ class _ChatPageState extends State<ChatPage> {
   bool available = false;
   List<Chat> chatList = [];
 
+  final FlutterTts flutterTts = FlutterTts();
+
+  speak(String text) async {
+    await flutterTts.setLanguage("en-US");
+    await flutterTts.setPitch(1); // 0.5 to 1.5
+    await flutterTts.setVolume(1);
+    await flutterTts.speak(text);
+  }
+
+
   @override
   void initState() {
     super.initState();
     _speech = stt.SpeechToText();
     _initSpeech();
+    getAnswer('JungwonJungmo');
   }
 
   /// This has to happen only once per app
@@ -52,13 +64,15 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   void getAnswer(String input) async {
-    String uri = 'http://ai.zigdeal.shop/chat/askGPT';
-    // String uri = 'http://10.0.2.2:5000/chat/askGPT';
+    // String uri = 'http://ai.zigdeal.shop/chat/askGPT';
+    String uri = 'http://10.0.2.2:5000/chat/askGPT';
     http.Response response = await http.post(Uri.parse(uri),
         headers: <String, String>{'Content-Type': "application/json"},
         body: jsonEncode(<String, String>{'text': input}));
     String responseBody = utf8.decode(response.bodyBytes);
     Map<String, dynamic> responseMap = json.decode(responseBody);
+    speak(responseMap['result']);
+
     chatList.add(Chat(DateTime.now(), responseMap['result'], 'GPT'));
     setState(() {
     });
