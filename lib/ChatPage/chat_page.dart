@@ -52,7 +52,8 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   void getAnswer(String input) async {
-    String uri = 'http://10.0.2.2:5000/chat/askGPT';
+    String uri = 'http://ai.zigdeal.shop/chat/askGPT';
+    // String uri = 'http://10.0.2.2:5000/chat/askGPT';
     http.Response response = await http.post(Uri.parse(uri),
         headers: <String, String>{'Content-Type': "application/json"},
         body: jsonEncode(<String, String>{'text': input}));
