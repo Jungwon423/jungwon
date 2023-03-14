@@ -1,6 +1,6 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 
@@ -8,6 +8,8 @@ import '../theme.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({Key? key}) : super(key: key);
+
+  static const storage = FlutterSecureStorage(); // FlutterSecureStorage를 storage로 저장
 
   @override
   Widget build(BuildContext context) {
@@ -84,7 +86,9 @@ class LoginScreen extends StatelessWidget {
                 // 카카오톡 실행이 가능하면 카카오톡으로 로그인, 아니면 카카오계정으로 로그인
                 if (await isKakaoTalkInstalled()) {
                   try {
-                    await UserApi.instance.loginWithKakaoTalk();
+                    OAuthToken token = await UserApi.instance.loginWithKakaoTalk();
+                    Navigator.pushReplacementNamed(context, '/chat');
+                    await storage.write(key: 'OAuthToken', value: token.accessToken);
                     print('카카오톡으로 로그인 성공');
                   } catch (error) {
                     print('카카오톡으로 로그인 실패 $error');
@@ -97,7 +101,9 @@ class LoginScreen extends StatelessWidget {
                     }
                     // 카카오톡에 연결된 카카오계정이 없는 경우, 카카오계정으로 로그인
                     try {
-                      await UserApi.instance.loginWithKakaoAccount();
+                      OAuthToken token = await UserApi.instance.loginWithKakaoAccount();
+                      Navigator.pushReplacementNamed(context, '/chat');
+                      await storage.write(key: 'OAuthToken', value: token.accessToken);
                       print('카카오계정으로 로그인 성공');
                     } catch (error) {
                       print('카카오계정으로 로그인 실패 $error');
@@ -105,7 +111,10 @@ class LoginScreen extends StatelessWidget {
                   }
                 } else {
                   try {
-                    await UserApi.instance.loginWithKakaoAccount();
+                    OAuthToken token = await UserApi.instance.loginWithKakaoAccount();
+
+                    await storage.write(key: 'OAuthToken', value: token.accessToken);
+                    Navigator.pushReplacementNamed(context, '/chat');
                     print('카카오계정으로 로그인 성공');
                   } catch (error) {
                     print('카카오계정으로 로그인 실패 $error');

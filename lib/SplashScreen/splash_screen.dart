@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
@@ -10,10 +11,22 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
+  static const storage =
+      FlutterSecureStorage(); //flutter_secure_storage 사용을 위한 초기화 작업
+
   @override
   Widget build(BuildContext context) {
     Future.delayed(const Duration(seconds: 1), () async {
-      Navigator.pushReplacementNamed(context, '/login');
+      String? oAuthToken = await storage.read(key: "OAuthToken");
+      print(oAuthToken);
+
+      if (oAuthToken == null) {
+        Navigator.pushReplacementNamed(context, '/login');
+      }
+      else
+        Navigator.pushReplacementNamed(context, '/chat');
+
+
       // Navigator.pushReplacementNamed(context, "/chat");
     });
     return Scaffold(
